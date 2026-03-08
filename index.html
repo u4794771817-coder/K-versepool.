@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kéversepool</title>
+    <style>
+        /* --- STYLE GÉNÉRAL --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+            background: linear-gradient(135deg, #000000 0%, #4a0000 100%);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background: rgba(0, 0, 0, 0.85);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo-group { display: flex; align-items: center; gap: 12px; }
+        .main-logo { height: 35px; width: auto; }
+        .site-name { font-size: 24px; font-weight: bold; }
+        
+        nav { flex-grow: 1; text-align: center; }
+        nav a { color: #ccc; text-decoration: none; margin: 0 15px; font-size: 14px; }
+
+        #user-area {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 15px;
+            border-radius: 25px;
+        }
+        .certif-icon { height: 22px; width: auto; }
+        .btn-logout {
+            background: #cc0000;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        /* --- SECTION ACCUEIL --- */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 100px;
+            height: 90vh;
+        }
+        .content { max-width: 55%; }
+        .content h1 { font-size: 60px; line-height: 1.1; margin-bottom: 10px; }
+        .btn-primary { 
+            background-color: #cc0000; 
+            color: white; 
+            padding: 16px 32px; 
+            border-radius: 8px; 
+            border: none; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 18px; 
+            transition: 0.3s;
+        }
+        .btn-primary:hover { background-color: #ff0000; transform: scale(1.05); }
+        .image-container img { width: 480px; border-radius: 15px; transform: rotate(2deg); box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+
+        /* --- SECTION POSES --- */
+        .poses-section { padding: 80px 0; text-align: center; background: rgba(0,0,0,0.2); }
+        .poses-section h2 { font-size: 32px; margin-bottom: 40px; }
+        .slider-container { width: 100%; overflow: hidden; white-space: nowrap; }
+        .slider-track { display: inline-flex; gap: 20px; animation: scroll 20s linear infinite; }
+        .slider-track img { height: 320px; border-radius: 12px; border: 2px solid #cc0000; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* --- SECTION MASQUE --- */
+        .mask-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px;
+            gap: 60px;
+        }
+        .mask-text { max-width: 600px; }
+        .mask-text h2 { color: #cc0000; font-size: 34px; margin-bottom: 20px; }
+        .mask-text p { font-size: 19px; line-height: 1.6; color: #eee; }
+        .mask-img-container img { width: 420px; border-radius: 20px; border-left: 6px solid #cc0000; }
+
+        /* --- SECTION EDITS & CERTIFICATION --- */
+        .exclusive-section {
+            padding: 80px 100px;
+            text-align: center;
+            background: rgba(0,0,0,0.4);
+            border-top: 2px solid #cc0000;
+        }
+
+        .video-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        .video-links a img {
+            width: 280px;
+            border-radius: 15px;
+            border: 3px solid #cc0000;
+            transition: 0.3s;
+        }
+        .video-links a img:hover { transform: scale(1.1); border-color: white; }
+
+        #locked-box {
+            width: 100%;
+            height: 450px;
+            background: black;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed #333;
+        }
+        #locked-box p { color: #666; font-size: 20px; font-style: italic; }
+
+        #unlocked-box { display: none; }
+        #unlocked-box img {
+            width: 650px;
+            border-radius: 20px;
+            border: 4px solid #cc0000;
+        }
+
+        /* --- MODALE --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 2000; justify-content: center; align-items: center; }
+        .login-window { width: 380px; padding: 35px; border-radius: 25px; background: linear-gradient(to bottom, #cc0000 0%, #ffffff 100%); position: relative; text-align: center; color: #333; }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: white; }
+        .input-group { text-align: left; margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }
+        .btn-submit { background: #000; color: #fff; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-group">
+            <img src="verse.png" alt="Logo" class="main-logo">
+            <span class="site-name">Kéversepool</span>
+        </div>
+        <nav>
+            <a href="#">Équipe</a>
+            <a href="#">Outil</a>
+            <a href="#">FAQ</a>
+        </nav>
+        <div id="user-area">
+            <img src="certifpool.png" alt="Certif" class="certif-icon" id="certif-img" style="display:none;">
+            <span id="display-name" style="color:white; font-weight:bold;"></span>
+            <button class="btn-logout" onclick="logout()">Déconnexion</button>
+        </div>
+    </header>
+
+    <main class="hero">
+        <div class="content">
+            <h1>Rejoin le Kéversepool pour des expériences incroyables.</h1>
+            <p style="color:#aaa; margin-bottom:30px;">Le site communautaire de Kelig</p>
+            <button class="btn-primary" onclick="openLogin()" id="btn-join-main">Rejoindre le Kéversepool →</button>
+        </div>
+        <div class="image-container">
+            <img src="kekepool.png" alt="Kekepool">
+        </div>
+    </main>
+
+    <section class="poses-section">
+        <h2>Mes poses</h2>
+        <div class="slider-container">
+            <div class="slider-track">
+                <img src="pool1.png"><img src="pool2.png"><img src="pool3.png"><img src="pool4.png">
+                <img src="pool1.png"><img src="pool2.png"><img src="pool3.png"><img src="pool4.png">
+            </div>
+        </div>
+    </section>
+
+    <section class="mask-info">
+        <div class="mask-text">
+            <h2>Ou jai eu le masque et il est fait en quoi ?</h2>
+            <p>J'ai eu ce masque sur <strong>Vinted</strong>. À 70 euros, ce masque est de très bonne qualité ; il est imprimé en 3D mais reste résistant. Il tient avec des aimants sur le visage (mais ce n'est pas top pour le laisser longtemps sur la tête).</p>
+        </div>
+        <div class="mask-img-container">
+            <img src="pool5.png" alt="Masque Pool">
+        </div>
+    </section>
+
+    <section class="exclusive-section">
+        <h2 style="margin-bottom: 40px; font-size: 34px;">Edit exclusif</h2>
+        <div class="video-links">
+            <a href="https://www.youtube.com/shorts/wnH9SwzExQU" target="_blank">
+                <img src="poolvideo.png" alt="Edit 1">
+            </a>
+            <a href="https://www.youtube.com/shorts/zcfh-Dre8NQ" target="_blank">
+                <img src="poolvideo2.png" alt="Edit 2">
+            </a>
+        </div>
+
+        <div id="locked-box">
+            <p>tu dois rentré le code de certification pour voir ceci</p>
+        </div>
+        <div id="unlocked-box">
+            <img src="pool6.png" style="width: 650px; border-radius: 20px; border: 4px solid #cc0000;" alt="Image Certifiée">
+        </div>
+    </section>
+
+    <div class="modal-overlay" id="modal">
+        <div class="login-window">
+            <span class="close-btn" onclick="closeLogin()">&times;</span>
+            <h2 style="color:white; margin-top:0;">Connexion</h2>
+            <div class="input-group"><label>Pseudo</label><input type="text" id="field-pseudo" placeholder="Ton pseudo"></div>
+            <div class="input-group"><label>Mail</label><input type="email" placeholder="ton@mail.com"></div>
+            <div class="input-group"><label>Mot de passe</label><input type="password" placeholder="••••••••"></div>
+            <div class="input-group"><label>Code Certif (1023014)</label><input type="text" id="field-code" placeholder="Entrer le code"></div>
+            <button class="btn-submit" onclick="login()">Se connecter</button>
+        </div>
+    </div>
+
+    <script>
+        function openLogin() { document.getElementById('modal').style.display = 'flex'; }
+        function closeLogin() { document.getElementById('modal').style.display = 'none'; }
+
+        function login() {
+            const pseudo = document.getElementById('field-pseudo').value;
+            const code = document.getElementById('field-code').value;
+            if (pseudo.trim() === "") { alert("Entre un pseudo !"); return; }
+
+            document.getElementById('display-name').innerText = pseudo;
+            document.getElementById('user-area').style.display = 'flex';
+            document.getElementById('btn-join-main').style.display = 'none';
+
+            if (code === "1023014") {
+                document.getElementById('certif-img').style.display = 'inline';
+                document.getElementById('locked-box').style.display = 'none';
+                document.getElementById('unlocked-box').style.display = 'block';
+            }
+            closeLogin();
+        }
+
+        function logout() {
+            document.getElementById('user-area').style.display = 'none';
+            document.getElementById('btn-join-main').style.display = 'inline-block';
+            document.getElementById('locked-box').style.display = 'flex';
+            document.getElementById('unlocked-box').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
